@@ -1,5 +1,6 @@
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
+import 'package:sales_dial/helpers/common.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -118,58 +119,122 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> _logout(BuildContext context) async {
-    final dioClient = await DioClient.create(); // Reinitialize DioClient
-    await dioClient.cookieJar.deleteAll(); // Clear all cookies
-
-    // Navigate to the LoginScreen
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-      (route) => false,
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ready to Leave?'),
+        content: const Text(
+            'Select "Logout" if you are ready to end your current session.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
     );
+    if (confirm == true) {
+      final dioClient = await DioClient.create(); // Reinitialize DioClient
+      await dioClient.cookieJar.deleteAll().then((value) => {
+            // Navigate to the LoginScreen
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+              (route) => false,
+            )
+          }); // Clear all cookies
+    }
   }
 
   void _showAddNoteDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        final TextEditingController titleController = TextEditingController();
-        final TextEditingController contentController = TextEditingController();
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController contentController = TextEditingController();
 
-        return AlertDialog(
-          title: const Text('Add Note'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows full height with keyboard
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          heightFactor: 0.9,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              top: 20,
+              left: 20,
+              right: 20,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Center(
+                    child: Text(
+                      'Add Note',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Common.buildTextField(
+                    controller: titleController,
+                    autofocus: true,
+                    label: 'Title',
+                  ),
+                  const SizedBox(height: 16),
+                  Common.buildTextField(
+                    controller: contentController,
+                    label: 'Content',
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor:
+                              Theme.of(context).colorScheme.primary,
+                        ),
+                        child: const Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          _addNote(
+                            titleController.text,
+                            contentController.text,
+                          );
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Add'),
+                      ),
+                    ],
+                  )
+                ],
               ),
-              TextField(
-                controller: contentController,
-                decoration: const InputDecoration(labelText: 'Content'),
-                maxLines: 3,
-              ),
-            ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _addNote(
-                  titleController.text,
-                  contentController.text,
-                );
-                Navigator.of(context).pop();
-              },
-              child: const Text('Add'),
-            ),
-          ],
         );
       },
     );

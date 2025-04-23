@@ -263,11 +263,12 @@ class _CallDetailScreenState extends State<CallDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        children: const [
+                        children: [
                           Icon(Icons.note_add_outlined,
-                              color: Colors.blue, size: 36),
-                          SizedBox(width: 12),
-                          Text(
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 36),
+                          const SizedBox(width: 12),
+                          const Text(
                             'Attached Note',
                             style: TextStyle(
                               fontSize: 20,
@@ -317,6 +318,25 @@ class _CallDetailScreenState extends State<CallDetailScreen> {
                         horizontal: 50, vertical: 12),
                   ),
                   onPressed: _showAttachNoteDialog,
+                ),
+              ),
+            ],
+
+            if (_attachedNote != null) ...[
+              const SizedBox(height: 24),
+              Center(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.send),
+                  label: const Text('Send to CRM'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                  ),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Sending to CRM...')),
+                    );
+                  },
                 ),
               ),
             ],
@@ -373,25 +393,6 @@ class _CallDetailScreenState extends State<CallDetailScreen> {
                 ),
               ],
             ),
-
-            if (_attachedNote != null) ...[
-              const SizedBox(height: 24),
-              Center(
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.send),
-                  label: const Text('Send to CRM'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                  ),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Sending to CRM...')),
-                    );
-                  },
-                ),
-              ),
-            ]
           ],
         ),
       ),

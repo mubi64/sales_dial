@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sales_dial/helpers/common.dart';
 import 'package:sales_dial/helpers/dio_client.dart';
 import 'package:sales_dial/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -117,7 +118,8 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 100),
-                const Icon(Icons.login, size: 48, color: Colors.blue),
+                Icon(Icons.login,
+                    size: 48, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(height: 16),
                 const Text(
                   'Login to Sales Dial',
@@ -127,20 +129,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                _buildTextField(
+                Common.buildTextField(
                   controller: _usernameController,
                   label: 'Username',
                   icon: Icons.person,
                 ),
                 const SizedBox(height: 16),
-                _buildTextField(
+                Common.buildTextField(
                   controller: _passwordController,
                   label: 'Password',
                   icon: Icons.lock,
                   obscureText: true,
                 ),
                 const SizedBox(height: 16),
-                _buildTextField(
+                Common.buildTextField(
                   controller: _urlController,
                   label: 'SowaanERP URL',
                   icon: Icons.link,
@@ -173,7 +175,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           label: const Text('Login',
                               style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             textStyle: const TextStyle(fontSize: 16),
                             shape: RoundedRectangleBorder(
@@ -185,27 +188,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    bool obscureText = false,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon),
-        labelText: label,
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );
